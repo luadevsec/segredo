@@ -4,15 +4,17 @@ import Lock from "../components/lock";
 const Game = () => {
     const nivel = 5;
     const [pass, setPass] = useState<number[]>([]);
-    const [valueGroup, setValueGroup] = useState<{ value: number; unlocked: boolean }[]>([]);
+    const [valueGroup, setValueGroup] = useState<{ value: number; unlocked: number }[]>([]);
+
+    const [tentativas, setTentativas] = useState(0);
 
     useEffect(() => {
         console.log('Game component mounted');
         const newPass: number[] = [];
-        const newValueGroup: { value: number; unlocked: boolean }[] = [];
+        const newValueGroup: { value: number; unlocked: number }[] = [];
         for (let i = 0; i < nivel; i++) {
             newPass.push(Math.floor(Math.random() * 10));
-            newValueGroup.push({ value: 0, unlocked: false });
+            newValueGroup.push({ value: 0, unlocked: 0 });
         }
         console.log('New pass:', newPass);
         setPass(newPass);
@@ -21,19 +23,23 @@ const Game = () => {
 
     const tryUnlock = () => {
         const unlock = (index: number) => {
+            const updatedValueGroup = [...valueGroup];
+
             if (valueGroup[index].value === pass[index]) {
-                const updatedValueGroup = [...valueGroup];
-                updatedValueGroup[index].unlocked = true;
-                setValueGroup(updatedValueGroup);
+                updatedValueGroup[index].unlocked = 1;
                 console.log('Lock opened');
+            } else if (pass.includes(valueGroup[index].value)) {
+                updatedValueGroup[index].unlocked = 2;
+                console.log('Lock closed but near');
             } else {
-                const updatedValueGroup = [...valueGroup];
-                updatedValueGroup[index].unlocked = false;
-                setValueGroup(updatedValueGroup);
+                updatedValueGroup[index].unlocked = 0;
                 console.log('Lock closed');
             }
+
+            setValueGroup(updatedValueGroup);
         };
 
+        setTentativas(tentativas + 1);
         for (let i = 0; i < nivel; i++) {
             unlock(i);
         }
@@ -53,7 +59,7 @@ const Game = () => {
     };
 
     return (
-        <div style={style}>
+        <><div style={style}>
             {pass.map((_, index) => {
                 console.log('Lock:', index);
                 return (
@@ -67,6 +73,9 @@ const Game = () => {
             })}
             <button onClick={tryUnlock}>try unlock</button>
         </div>
+        {tentativas > 0 && <p>você fez {tentativas} tentativas</p>}
+        </>
+        
     );
 };
 

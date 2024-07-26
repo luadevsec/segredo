@@ -3,7 +3,7 @@ import { useEffect } from "react";
 interface Sets {
     value: number;
     setValue: React.Dispatch<React.SetStateAction<number>>;
-    unlocked: boolean;
+    unlocked: number;
 }
 
 const Lock = ({ value, setValue, unlocked }: Sets) => {
@@ -36,9 +36,8 @@ const Lock = ({ value, setValue, unlocked }: Sets) => {
         alignItems: 'center',
         flexDirection: 'column',
     };
-
     const style: React.CSSProperties = {
-        backgroundColor: unlocked ? 'green' : 'red',
+        backgroundColor: unlocked === 1 ? 'green' : unlocked === 2 ? 'yellow' : 'red',
         color: 'white',
         padding: '10px',
         margin: '10px',

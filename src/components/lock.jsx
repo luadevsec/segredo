@@ -1,12 +1,11 @@
 import { useContext, useEffect } from "react";
-import { GameContext } from "../pages/game"; // Assuming GameContext is exported as a named export from "../pages/game"
+import gameContext  from "../context/gameContext";
 
 
+const Lock = ({index}) => {
 
-const Lock = ({index}:{index: number}) => {
-
-    const {value, unlocked} = useContext(GameContext).valueGroup[index];
-    const setValue = useContext(GameContext).setLockValue;
+    const {value, unlocked} = useContext(gameContext).valueGroup[index];
+    const setValue = useContext(gameContext).setLockValue;
 
     const limites = {
         min: 0,
@@ -30,13 +29,13 @@ const Lock = ({index}:{index: number}) => {
         else setValue(index, 9);
     };
 
-    const display: React.CSSProperties = {
+    const display = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
     };
-    const style: React.CSSProperties = {
+    const style = {
         backgroundColor: unlocked === 1 ? 'green' : unlocked === 2 ? 'yellow' : 'red',
         color: 'white',
         padding: '10px',

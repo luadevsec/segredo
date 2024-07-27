@@ -1,14 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Lock from "../components/lock";
-
-
-export const GameContext = React.createContext();
+import { GameContext } from "../context/gameContext";
 
 const Game = () => {
-    const nivel = 5;
-    const [pass, setPass] = useState([]);
-    const [valueGroup, setValueGroup] = useState([]);
-
+    const { nivel, pass, valueGroup, setPass, setValueGroup } = useContext(GameContext);
     const [tentativas, setTentativas] = useState(0);
 
     useEffect(() => {
@@ -22,7 +17,7 @@ const Game = () => {
         console.log('New pass:', newPass);
         setPass(newPass);
         setValueGroup(newValueGroup);
-    }, [nivel]);
+    }, [nivel, setPass, setValueGroup]);
 
     const tryUnlock = () => {
         const unlock = (index) => {
@@ -48,12 +43,6 @@ const Game = () => {
         }
     };
 
-    const setLockValue = (index, newValue) => {
-        const updatedValueGroup = [...valueGroup];
-        updatedValueGroup[index].value = typeof newValue === 'function' ? newValue(updatedValueGroup[index].value) : newValue;
-        setValueGroup(updatedValueGroup);
-    };
-
     const style = {
         display: 'flex',
         justifyContent: 'center',
@@ -62,22 +51,21 @@ const Game = () => {
     };
 
     return (
-        <GameContext.Provider value={{valueGroup, setLockValue}}>
-            <div style={style}>
-                {pass.map((_, index) => {
-                    console.log('Lock:', index);
-                    return (
-                        <Lock
-                            key={index}
-                            index={index}
-                        />
-                    );
-                })}
-                <button onClick={tryUnlock}>try unlock</button>
-            </div>
+        <div style={style}>
+            {pass.map((_, index) => {
+                console.log('Lock:', index);
+                return (
+                    <Lock
+                        key={index}
+                        index={index}
+                    />
+                );
+            })}
+            <button onClick={tryUnlock}>try unlock</button>
             {tentativas > 0 && <p>você fez {tentativas} tentativas</p>}
-        </GameContext.Provider>
+        </div>
     );
 };
 
 export default Game;
+

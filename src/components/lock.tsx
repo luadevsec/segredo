@@ -1,12 +1,12 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import { GameContext } from "../pages/game"; // Assuming GameContext is exported as a named export from "../pages/game"
 
-interface Sets {
-    value: number;
-    setValue: React.Dispatch<React.SetStateAction<number>>;
-    unlocked: number;
-}
 
-const Lock = ({ value, setValue, unlocked }: Sets) => {
+
+const Lock = ({index}:{index: number}) => {
+
+    const {value, unlocked} = useContext(GameContext).valueGroup[index];
+    const setValue = useContext(GameContext).setLockValue;
 
     const limites = {
         min: 0,
@@ -21,13 +21,13 @@ const Lock = ({ value, setValue, unlocked }: Sets) => {
     }, []);
 
     const upValue = () => {
-        if (value < limites.max) setValue(value + 1);
-        else setValue(0);
+        if (value < limites.max) setValue(index, value + 1);
+        else setValue(index, 0);
     };
 
     const downValue = () => {
-        if (value > limites.min) setValue(value - 1);
-        else setValue(9);
+        if (value > limites.min) setValue(index, value - 1);
+        else setValue(index, 9);
     };
 
     const display: React.CSSProperties = {

@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import Lock from "../components/lock";
 
+
+export const GameContext = React.createContext();
+
 const Game = () => {
     const nivel = 5;
-    const [pass, setPass] = useState<number[]>([]);
-    const [valueGroup, setValueGroup] = useState<{ value: number; unlocked: number }[]>([]);
+    const [pass, setPass] = useState([]);
+    const [valueGroup, setValueGroup] = useState([]);
 
     const [tentativas, setTentativas] = useState(0);
 
     useEffect(() => {
         console.log('Game component mounted');
-        const newPass: number[] = [];
-        const newValueGroup: { value: number; unlocked: number }[] = [];
+        const newPass = [];
+        const newValueGroup = [];
         for (let i = 0; i < nivel; i++) {
             newPass.push(Math.floor(Math.random() * 10));
             newValueGroup.push({ value: 0, unlocked: 0 });
@@ -22,7 +25,7 @@ const Game = () => {
     }, [nivel]);
 
     const tryUnlock = () => {
-        const unlock = (index: number) => {
+        const unlock = (index) => {
             const updatedValueGroup = [...valueGroup];
 
             if (valueGroup[index].value === pass[index]) {
@@ -45,13 +48,13 @@ const Game = () => {
         }
     };
 
-    const setLockValue = (index: number, newValue: React.SetStateAction<number>) => {
+    const setLockValue = (index, newValue) => {
         const updatedValueGroup = [...valueGroup];
         updatedValueGroup[index].value = typeof newValue === 'function' ? newValue(updatedValueGroup[index].value) : newValue;
         setValueGroup(updatedValueGroup);
     };
 
-    const style: React.CSSProperties = {
+    const style = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
@@ -59,23 +62,21 @@ const Game = () => {
     };
 
     return (
-        <><div style={style}>
-            {pass.map((_, index) => {
-                console.log('Lock:', index);
-                return (
-                    <Lock
-                        key={index}
-                        value={valueGroup[index].value}
-                        setValue={(newValue) => setLockValue(index, newValue)}
-                        unlocked={valueGroup[index].unlocked}
-                    />
-                );
-            })}
-            <button onClick={tryUnlock}>try unlock</button>
-        </div>
-        {tentativas > 0 && <p>você fez {tentativas} tentativas</p>}
-        </>
-        
+        <GameContext.Provider value={{valueGroup, setLockValue}}>
+            <div style={style}>
+                {pass.map((_, index) => {
+                    console.log('Lock:', index);
+                    return (
+                        <Lock
+                            key={index}
+                            index={index}
+                        />
+                    );
+                })}
+                <button onClick={tryUnlock}>try unlock</button>
+            </div>
+            {tentativas > 0 && <p>você fez {tentativas} tentativas</p>}
+        </GameContext.Provider>
     );
 };
 
